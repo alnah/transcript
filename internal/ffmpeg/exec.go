@@ -15,6 +15,7 @@ import (
 // properly (write headers, close container), then waits up to timeout before killing.
 // This approach works cross-platform (Windows/macOS/Linux) unlike SIGTERM.
 func RunGraceful(ctx context.Context, ffmpegPath string, args []string, timeout time.Duration) error {
+	// #nosec G204 -- ffmpegPath is resolved by internal resolver or explicit FFMPEG_PATH.
 	cmd := exec.Command(ffmpegPath, args...)
 
 	// Create stdin pipe for graceful shutdown via 'q' command.
@@ -114,6 +115,7 @@ func (e *Executor) RunOutput(ctx context.Context, ffmpegPath string, args []stri
 // non-zero exit codes for valid operations (e.g., -list_devices returns 1).
 // The error is returned for debugging but callers typically ignore it.
 func defaultRunOutput(ctx context.Context, ffmpegPath string, args []string) (string, error) {
+	// #nosec G204 -- ffmpegPath is resolved by internal resolver or explicit FFMPEG_PATH.
 	cmd := exec.CommandContext(ctx, ffmpegPath, args...)
 
 	var stderr bytes.Buffer

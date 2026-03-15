@@ -19,6 +19,7 @@ type shellCommandRunner interface {
 type osShellRunner struct{}
 
 func (osShellRunner) Output(ctx context.Context, name string, args ...string) ([]byte, error) {
+	// #nosec G204 -- commands are fixed probes (pactl/pw-cli) from internal code paths.
 	return exec.CommandContext(ctx, name, args...).Output()
 }
 
