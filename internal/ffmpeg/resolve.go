@@ -41,6 +41,12 @@ const (
 
 	// installDirPerm is the permission mode for the FFmpeg install directory.
 	installDirPerm = 0750
+
+	// installDirName is the current FFmpeg install directory under home.
+	installDirName = ".transcript"
+
+	// legacyInstallDirName is the previous install directory (fallback read only).
+	legacyInstallDirName = ".go-transcript"
 )
 
 // Environment variable for custom ffmpeg path.
@@ -171,8 +177,9 @@ func NewResolver(opts ...ResolverOption) *Resolver {
 // Resolve finds ffmpeg using the following precedence:
 //  1. FFMPEG_PATH environment variable (error if set but invalid)
 //  2. ~/.transcript/bin/ffmpeg (installed by us)
-//  3. System PATH
-//  4. Auto-download if nothing found
+//  3. ~/.go-transcript/bin/ffmpeg (legacy install location, fallback)
+//  4. System PATH
+//  5. Auto-download if nothing found
 func (r *Resolver) Resolve(ctx context.Context) (string, error) {
 	// 1. Check FFMPEG_PATH environment variable
 	if envPath := r.env.Getenv(envFFmpegPath); envPath != "" {
@@ -183,22 +190,21 @@ func (r *Resolver) Resolve(ctx context.Context) (string, error) {
 		return envPath, nil
 	}
 
-	// 2. Check our install directory
-	installed, err := r.isInstalled()
+	// 2-3. Check install directories (new path first, then legacy fallback)
+	installedPath, installed, err := r.findInstalledPath()
 	if err != nil {
 		return "", err
 	}
 	if installed {
-		path, _ := r.installedPath()
-		return path, nil
+		return installedPath, nil
 	}
 
-	// 3. Check system PATH
+	// 4. Check system PATH
 	if path, err := r.env.LookPath("ffmpeg"); err == nil {
 		return path, nil
 	}
 
-	// 4. Auto-download
+	// 5. Auto-download
 	fmt.Fprintln(r.stderr, "ffmpeg not found, downloading...")
 	if err := r.downloadAndInstall(ctx); err != nil {
 		return "", fmt.Errorf("%w: auto-download failed: %v\n\n%s",
@@ -215,7 +221,16 @@ func (r *Resolver) installDir() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("cannot determine home directory: %w", err)
 	}
-	return filepath.Join(home, ".transcript", "bin"), nil
+	return filepath.Join(home, installDirName, "bin"), nil
+}
+
+// legacyInstallDir returns the previous install directory used before rename.
+func (r *Resolver) legacyInstallDir() (string, error) {
+	home, err := r.env.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("cannot determine home directory: %w", err)
+	}
+	return filepath.Join(home, legacyInstallDirName, "bin"), nil
 }
 
 // installedPath returns the path where ffmpeg would be installed.
@@ -224,31 +239,65 @@ func (r *Resolver) installedPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	return r.installedPathInDir(dir), nil
+}
 
+// installedPathInDir builds the ffmpeg binary path for the provided install directory.
+func (r *Resolver) installedPathInDir(dir string) string {
 	name := binaryName
 	if r.goos == "windows" {
 		name += binaryExtWindows
 	}
-
-	return filepath.Join(dir, name), nil
+	return filepath.Join(dir, name)
 }
 
-// isInstalled checks if ffmpeg is already installed at the expected location.
+// findInstalledPath returns the first valid install path, preferring the new
+// location and falling back to the legacy location.
+func (r *Resolver) findInstalledPath() (string, bool, error) {
+	newDir, err := r.installDir()
+	if err != nil {
+		return "", false, err
+	}
+	newPath := r.installedPathInDir(newDir)
+	newVersionPath := filepath.Join(newDir, versionFileName)
+
+	ok, err := r.isInstalledAt(newPath, newVersionPath)
+	if err != nil {
+		return "", false, err
+	}
+	if ok {
+		return newPath, true, nil
+	}
+
+	legacyDir, err := r.legacyInstallDir()
+	if err != nil {
+		return "", false, err
+	}
+	legacyPath := r.installedPathInDir(legacyDir)
+	legacyVersionPath := filepath.Join(legacyDir, versionFileName)
+
+	ok, err = r.isInstalledAt(legacyPath, legacyVersionPath)
+	if err != nil {
+		return "", false, err
+	}
+	if ok {
+		return legacyPath, true, nil
+	}
+
+	return "", false, nil
+}
+
+// isInstalledAt checks whether ffmpeg and matching version metadata exist.
 // Note: There is a TOCTOU race between Stat and ReadFile, but this is acceptable
 // because the worst case is a redundant download, which is idempotent.
-func (r *Resolver) isInstalled() (bool, error) {
-	ffmpegPath, err := r.installedPath()
-	if err != nil {
-		return false, err
+func (r *Resolver) isInstalledAt(ffmpegPath, versionPath string) (bool, error) {
+	if _, err := r.reader.Stat(ffmpegPath); err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, fmt.Errorf("cannot access ffmpeg binary %s: %w", ffmpegPath, err)
 	}
 
-	if _, err := r.reader.Stat(ffmpegPath); os.IsNotExist(err) {
-		return false, nil
-	}
-
-	// Check version file matches current version
-	dir, _ := r.installDir()
-	versionPath := filepath.Join(dir, versionFileName)
 	data, err := r.reader.ReadFile(versionPath)
 	if err != nil {
 		return false, nil // Version file missing = needs reinstall

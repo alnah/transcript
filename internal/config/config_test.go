@@ -39,6 +39,20 @@ func writeConfigFile(t *testing.T, dir, content string) {
 	}
 }
 
+// writeLegacyConfigFile creates a config file in the previous directory name
+// used before the repository rename.
+func writeLegacyConfigFile(t *testing.T, dir, content string) {
+	t.Helper()
+	configDir := filepath.Join(dir, "go-transcript")
+	if err := os.MkdirAll(configDir, 0750); err != nil {
+		t.Fatalf("failed to create legacy config dir: %v", err)
+	}
+	configPath := filepath.Join(configDir, "config")
+	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
+		t.Fatalf("failed to write legacy config file: %v", err)
+	}
+}
+
 // ---------------------------------------------------------------------------
 // TestResolveOutputPath - Pure function for output path resolution
 // ---------------------------------------------------------------------------
@@ -307,6 +321,37 @@ func TestLoad(t *testing.T) {
 		}
 	})
 
+	t.Run("falls back to legacy config file when new path is missing", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		t.Setenv("TRANSCRIPT_OUTPUT_DIR", "")
+		writeLegacyConfigFile(t, tmpDir, "output-dir=/from/legacy\n")
+
+		cfg, err := Load()
+		if err != nil {
+			t.Fatalf("Load() unexpected error: %v", err)
+		}
+		if cfg.OutputDir != "/from/legacy" {
+			t.Errorf("OutputDir = %q, want %q", cfg.OutputDir, "/from/legacy")
+		}
+	})
+
+	t.Run("prefers new config file over legacy fallback", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		t.Setenv("TRANSCRIPT_OUTPUT_DIR", "")
+		writeConfigFile(t, tmpDir, "output-dir=/from/new\n")
+		writeLegacyConfigFile(t, tmpDir, "output-dir=/from/legacy\n")
+
+		cfg, err := Load()
+		if err != nil {
+			t.Fatalf("Load() unexpected error: %v", err)
+		}
+		if cfg.OutputDir != "/from/new" {
+			t.Errorf("OutputDir = %q, want %q", cfg.OutputDir, "/from/new")
+		}
+	})
+
 	t.Run("falls back to env var when file empty", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		t.Setenv("XDG_CONFIG_HOME", tmpDir)
@@ -432,6 +477,66 @@ func TestSave(t *testing.T) {
 		}
 	})
 
+	t.Run("reads legacy file and writes updated data to new path", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		writeLegacyConfigFile(t, tmpDir, "other-key=legacy\noutput-dir=/old\n")
+
+		err := Save("output-dir", "/new")
+		if err != nil {
+			t.Fatalf("Save(%q, %q) unexpected error: %v", "output-dir", "/new", err)
+		}
+
+		newConfigPath := filepath.Join(tmpDir, "transcript", "config")
+		if _, err := os.Stat(newConfigPath); err != nil {
+			t.Fatalf("expected migrated config at new path %q: %v", newConfigPath, err)
+		}
+
+		data, err := parseFile(newConfigPath)
+		if err != nil {
+			t.Fatalf("parseFile(%q) unexpected error: %v", newConfigPath, err)
+		}
+		if data["other-key"] != "legacy" {
+			t.Errorf("other-key = %q, want %q", data["other-key"], "legacy")
+		}
+		if data["output-dir"] != "/new" {
+			t.Errorf("output-dir = %q, want %q", data["output-dir"], "/new")
+		}
+	})
+
+	t.Run("prefers new file when both new and legacy exist", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		writeConfigFile(t, tmpDir, "other-key=new\noutput-dir=/new-base\n")
+		writeLegacyConfigFile(t, tmpDir, "other-key=legacy\noutput-dir=/legacy-base\n")
+
+		err := Save("output-dir", "/updated")
+		if err != nil {
+			t.Fatalf("Save(%q, %q) unexpected error: %v", "output-dir", "/updated", err)
+		}
+
+		newConfigPath := filepath.Join(tmpDir, "transcript", "config")
+		newData, err := parseFile(newConfigPath)
+		if err != nil {
+			t.Fatalf("parseFile(%q) unexpected error: %v", newConfigPath, err)
+		}
+		if newData["other-key"] != "new" {
+			t.Errorf("new other-key = %q, want %q (should preserve new file)", newData["other-key"], "new")
+		}
+		if newData["output-dir"] != "/updated" {
+			t.Errorf("new output-dir = %q, want %q", newData["output-dir"], "/updated")
+		}
+
+		legacyConfigPath := filepath.Join(tmpDir, "go-transcript", "config")
+		legacyData, err := parseFile(legacyConfigPath)
+		if err != nil {
+			t.Fatalf("parseFile(%q) unexpected error: %v", legacyConfigPath, err)
+		}
+		if legacyData["output-dir"] != "/legacy-base" {
+			t.Errorf("legacy output-dir = %q, want unchanged %q", legacyData["output-dir"], "/legacy-base")
+		}
+	})
+
 	t.Run("adds new key to existing file", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		t.Setenv("XDG_CONFIG_HOME", tmpDir)
@@ -543,6 +648,35 @@ func TestGet(t *testing.T) {
 		}
 	})
 
+	t.Run("falls back to legacy file when new path is missing", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		writeLegacyConfigFile(t, tmpDir, "my-key=legacy-value\n")
+
+		got, err := Get("my-key")
+		if err != nil {
+			t.Fatalf("Get(%q) unexpected error: %v", "my-key", err)
+		}
+		if got != "legacy-value" {
+			t.Errorf("Get(%q) = %q, want %q", "my-key", got, "legacy-value")
+		}
+	})
+
+	t.Run("prefers new file over legacy when both exist", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		writeConfigFile(t, tmpDir, "my-key=new-value\n")
+		writeLegacyConfigFile(t, tmpDir, "my-key=legacy-value\n")
+
+		got, err := Get("my-key")
+		if err != nil {
+			t.Fatalf("Get(%q) unexpected error: %v", "my-key", err)
+		}
+		if got != "new-value" {
+			t.Errorf("Get(%q) = %q, want %q", "my-key", got, "new-value")
+		}
+	})
+
 	t.Run("returns error for invalid config syntax", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		t.Setenv("XDG_CONFIG_HOME", tmpDir)
@@ -596,6 +730,38 @@ func TestList(t *testing.T) {
 		}
 		if len(got) != 0 {
 			t.Errorf("List() returned %d items, want 0", len(got))
+		}
+	})
+
+	t.Run("falls back to legacy file when new path is missing", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		writeLegacyConfigFile(t, tmpDir, "key1=value1\nkey2=value2\n")
+
+		got, err := List()
+		if err != nil {
+			t.Fatalf("List() unexpected error: %v", err)
+		}
+		if len(got) != 2 {
+			t.Errorf("List() returned %d items, want 2", len(got))
+		}
+		if got["key1"] != "value1" || got["key2"] != "value2" {
+			t.Errorf("List() fallback values = %#v, want key1=value1 and key2=value2", got)
+		}
+	})
+
+	t.Run("prefers new file over legacy when both exist", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_CONFIG_HOME", tmpDir)
+		writeConfigFile(t, tmpDir, "key1=new1\nkey2=new2\n")
+		writeLegacyConfigFile(t, tmpDir, "key1=legacy1\nkey2=legacy2\n")
+
+		got, err := List()
+		if err != nil {
+			t.Fatalf("List() unexpected error: %v", err)
+		}
+		if got["key1"] != "new1" || got["key2"] != "new2" {
+			t.Errorf("List() values = %#v, want new file values", got)
 		}
 	})
 

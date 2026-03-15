@@ -15,6 +15,13 @@ const (
 	KeyOutputDir = "output-dir"
 )
 
+// Config directory names.
+const (
+	configDirName       = "transcript"
+	legacyConfigDirName = "go-transcript"
+	configFileName      = "config"
+)
+
 // Environment variable fallbacks.
 const (
 	EnvOutputDir = "TRANSCRIPT_OUTPUT_DIR"
@@ -47,14 +54,27 @@ type Config struct {
 // Uses XDG_CONFIG_HOME if set, otherwise ~/.config/transcript.
 func dir() (string, error) {
 	if xdg := os.Getenv("XDG_CONFIG_HOME"); xdg != "" {
-		return filepath.Join(xdg, "transcript"), nil
+		return filepath.Join(xdg, configDirName), nil
 	}
 
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("cannot determine home directory: %w", err)
 	}
-	return filepath.Join(home, ".config", "transcript"), nil
+	return filepath.Join(home, ".config", configDirName), nil
+}
+
+// legacyDir returns the previous configuration directory path used before rename.
+func legacyDir() (string, error) {
+	if xdg := os.Getenv("XDG_CONFIG_HOME"); xdg != "" {
+		return filepath.Join(xdg, legacyConfigDirName), nil
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("cannot determine home directory: %w", err)
+	}
+	return filepath.Join(home, ".config", legacyConfigDirName), nil
 }
 
 // path returns the full path to the config file.
@@ -63,7 +83,46 @@ func path() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(d, "config"), nil
+	return filepath.Join(d, configFileName), nil
+}
+
+// legacyPath returns the previous config file path used before rename.
+func legacyPath() (string, error) {
+	d, err := legacyDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(d, configFileName), nil
+}
+
+// readPath returns the config file to read.
+// Preference order:
+//  1. New path (~/.config/transcript/config)
+//  2. Legacy path (~/.config/go-transcript/config) for backward compatibility
+//  3. New path (when neither exists, callers handle os.IsNotExist)
+func readPath() (string, error) {
+	p, err := path()
+	if err != nil {
+		return "", err
+	}
+
+	if _, err := os.Stat(p); err == nil {
+		return p, nil
+	} else if !os.IsNotExist(err) {
+		return p, nil
+	}
+
+	legacy, err := legacyPath()
+	if err != nil {
+		return "", err
+	}
+	if _, err := os.Stat(legacy); err == nil {
+		return legacy, nil
+	} else if !os.IsNotExist(err) {
+		return legacy, nil
+	}
+
+	return p, nil
 }
 
 // Load reads the configuration file and environment variables.
@@ -72,7 +131,7 @@ func path() (string, error) {
 func Load() (Config, error) {
 	var cfg Config
 
-	p, err := path()
+	p, err := readPath()
 	if err != nil {
 		return cfg, err
 	}
@@ -151,14 +210,19 @@ func Save(key, value string) error {
 		return err
 	}
 
+	readConfigPath, err := readPath()
+	if err != nil {
+		return err
+	}
+
 	// Ensure config directory exists.
 	configDir := filepath.Dir(configPath)
 	if err := os.MkdirAll(configDir, dirPerm); err != nil { // #nosec G301 -- user config dir
 		return fmt.Errorf("cannot create config directory: %w", err)
 	}
 
-	// Read existing config (if any).
-	existing, _ := parseFile(configPath)
+	// Read existing config (if any), with legacy fallback.
+	existing, _ := parseFile(readConfigPath)
 	if existing == nil {
 		existing = make(map[string]string)
 	}
@@ -199,7 +263,7 @@ func writeFile(path string, data map[string]string) error {
 // Get reads a single value from the config file.
 // Returns empty string if the key doesn't exist.
 func Get(key string) (string, error) {
-	p, err := path()
+	p, err := readPath()
 	if err != nil {
 		return "", err
 	}
@@ -217,7 +281,7 @@ func Get(key string) (string, error) {
 
 // List returns all config values as a map.
 func List() (map[string]string, error) {
-	p, err := path()
+	p, err := readPath()
 	if err != nil {
 		return nil, err
 	}

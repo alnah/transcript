@@ -406,6 +406,103 @@ func TestResolverResolveInstalledPath(t *testing.T) {
 	}
 }
 
+func TestResolverResolveLegacyInstalledPathFallback(t *testing.T) {
+	t.Parallel()
+
+	homeDir := "/mock/home"
+	newPath := filepath.Join(homeDir, ".transcript", "bin", "ffmpeg")
+	legacyPath := filepath.Join(homeDir, ".go-transcript", "bin", "ffmpeg")
+	legacyVersionPath := filepath.Join(homeDir, ".go-transcript", "bin", ".version")
+
+	env := &mockEnvProvider{
+		getenv:      func(key string) string { return "" },
+		userHomeDir: func() (string, error) { return homeDir, nil },
+		lookPath:    func(file string) (string, error) { return "", errors.New("not in PATH") },
+	}
+
+	reader := &mockFileReader{
+		stat: func(name string) (os.FileInfo, error) {
+			switch name {
+			case newPath:
+				return nil, os.ErrNotExist
+			case legacyPath:
+				return mockFileInfo{name: "ffmpeg"}, nil
+			default:
+				return nil, os.ErrNotExist
+			}
+		},
+		readFile: func(name string) ([]byte, error) {
+			if name == legacyVersionPath {
+				return []byte(ffmpegVersion), nil
+			}
+			return nil, os.ErrNotExist
+		},
+	}
+
+	resolver := NewResolver(
+		WithEnvProvider(env),
+		WithFileReader(reader),
+		WithStderr(io.Discard),
+	)
+
+	got, err := resolver.Resolve(context.Background())
+	if err != nil {
+		t.Fatalf("Resolve() unexpected error: %v", err)
+	}
+	if got != legacyPath {
+		t.Errorf("Resolve() = %q, want %q", got, legacyPath)
+	}
+}
+
+func TestResolverResolvePrefersNewInstalledPathOverLegacy(t *testing.T) {
+	t.Parallel()
+
+	homeDir := "/mock/home"
+	newPath := filepath.Join(homeDir, ".transcript", "bin", "ffmpeg")
+	newVersionPath := filepath.Join(homeDir, ".transcript", "bin", ".version")
+	legacyPath := filepath.Join(homeDir, ".go-transcript", "bin", "ffmpeg")
+	legacyVersionPath := filepath.Join(homeDir, ".go-transcript", "bin", ".version")
+
+	env := &mockEnvProvider{
+		getenv:      func(key string) string { return "" },
+		userHomeDir: func() (string, error) { return homeDir, nil },
+		lookPath:    func(file string) (string, error) { return "", errors.New("not in PATH") },
+	}
+
+	reader := &mockFileReader{
+		stat: func(name string) (os.FileInfo, error) {
+			switch name {
+			case newPath, legacyPath:
+				return mockFileInfo{name: "ffmpeg"}, nil
+			default:
+				return nil, os.ErrNotExist
+			}
+		},
+		readFile: func(name string) ([]byte, error) {
+			switch name {
+			case newVersionPath, legacyVersionPath:
+				return []byte(ffmpegVersion), nil
+			default:
+				return nil, os.ErrNotExist
+			}
+		},
+	}
+
+	resolver := NewResolver(
+		WithEnvProvider(env),
+		WithFileReader(reader),
+		WithStderr(io.Discard),
+	)
+
+	got, err := resolver.Resolve(context.Background())
+	if err != nil {
+		t.Fatalf("Resolve() unexpected error: %v", err)
+	}
+	if got != newPath {
+		t.Errorf("Resolve() = %q, want %q (new path must win over legacy)", got, newPath)
+	}
+}
+
 func TestResolverResolveSystemPath(t *testing.T) {
 	t.Parallel()
 
