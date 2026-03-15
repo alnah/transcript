@@ -29,7 +29,7 @@ import (
 // writeConfigFile creates a config file in the given directory.
 func writeConfigFile(t *testing.T, dir, content string) {
 	t.Helper()
-	configDir := filepath.Join(dir, "go-transcript")
+	configDir := filepath.Join(dir, "transcript")
 	if err := os.MkdirAll(configDir, 0750); err != nil {
 		t.Fatalf("failed to create config dir: %v", err)
 	}
@@ -692,10 +692,10 @@ func TestEnsureOutputDir(t *testing.T) {
 		}
 
 		// Create unique test dir name
-		testDir := filepath.Join(home, ".go-transcript-test-ensure-output-dir")
+		testDir := filepath.Join(home, ".transcript-test-ensure-output-dir")
 		t.Cleanup(func() { os.RemoveAll(testDir) })
 
-		err = EnsureOutputDir("~/.go-transcript-test-ensure-output-dir")
+		err = EnsureOutputDir("~/.transcript-test-ensure-output-dir")
 		if err != nil {
 			t.Errorf("EnsureOutputDir with ~ = %v, want nil", err)
 		}
@@ -897,7 +897,7 @@ func TestDir(t *testing.T) {
 		if err != nil {
 			t.Fatalf("dir() unexpected error: %v", err)
 		}
-		want := "/custom/config/go-transcript"
+		want := "/custom/config/transcript"
 		if got != want {
 			t.Errorf("dir() = %q, want %q", got, want)
 		}
@@ -915,7 +915,7 @@ func TestDir(t *testing.T) {
 		if err != nil {
 			t.Fatalf("dir() unexpected error: %v", err)
 		}
-		want := filepath.Join(home, ".config", "go-transcript")
+		want := filepath.Join(home, ".config", "transcript")
 		if got != want {
 			t.Errorf("dir() = %q, want %q", got, want)
 		}

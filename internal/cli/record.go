@@ -10,9 +10,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/config"
-	"github.com/alnah/go-transcript/internal/format"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/config"
+	"github.com/alnah/transcript/internal/format"
 )
 
 // recordOptions holds the validated options for the record command.

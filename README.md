@@ -1,9 +1,9 @@
-# go-transcript
+# transcript
 
-[![Go Reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/alnah/go-transcript)
-[![Go Report Card](https://img.shields.io/badge/go%20report-A+-brightgreen)](https://goreportcard.com/report/github.com/alnah/go-transcript)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/alnah/go-transcript/ci.yml?branch=main)](https://github.com/alnah/go-transcript/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/alnah/go-transcript)](https://codecov.io/gh/alnah/go-transcript)
+[![Go Reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/alnah/transcript)
+[![Go Report Card](https://img.shields.io/badge/go%20report-A+-brightgreen)](https://goreportcard.com/report/github.com/alnah/transcript)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/alnah/transcript/ci.yml?branch=main)](https://github.com/alnah/transcript/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/alnah/transcript)](https://codecov.io/gh/alnah/transcript)
 [![License](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](LICENSE)
 
 > Record, transcribe, and restructure audio via CLI - microphone/loopback capture, automatic chunking, parallel transcription, and template-based formatting.
@@ -27,7 +27,7 @@
 ## Installation
 
 ```bash
-go install github.com/alnah/go-transcript/cmd/transcript@latest
+go install github.com/alnah/transcript/cmd/transcript@latest
 ```
 
 <details>
@@ -36,14 +36,14 @@ go install github.com/alnah/go-transcript/cmd/transcript@latest
 ### Build from Source
 
 ```bash
-git clone https://github.com/alnah/go-transcript.git
-cd go-transcript
+git clone https://github.com/alnah/transcript.git
+cd transcript
 make build
 ```
 
 ### Binary Download
 
-Download pre-built binaries from [GitHub Releases](https://github.com/alnah/go-transcript/releases).
+Download pre-built binaries from [GitHub Releases](https://github.com/alnah/transcript/releases).
 
 </details>
 
@@ -293,9 +293,9 @@ Config files are stored in the user config directory:
 
 | OS      | Config Directory             |
 |---------|------------------------------|
-| Linux   | `~/.config/go-transcript/`   |
-| macOS   | `~/.config/go-transcript/`   |
-| Windows | `%APPDATA%\go-transcript\`   |
+| Linux   | `~/.config/transcript/`   |
+| macOS   | `~/.config/transcript/`   |
+| Windows | `%APPDATA%\transcript\`   |
 
 Respects `XDG_CONFIG_HOME` if set.
 
@@ -307,7 +307,7 @@ Respects `XDG_CONFIG_HOME` if set.
 <summary>Example config file</summary>
 
 ```ini
-# ~/.config/go-transcript/config
+# ~/.config/transcript/config
 output-dir=/Users/john/Documents/transcripts
 ```
 

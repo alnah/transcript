@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in go-transcript
+description: Report a bug in transcript
 title: "[Bug]: "
 labels: ["bug"]
 body:
@@ -7,9 +7,9 @@ body:
     attributes:
       value: |
         Thanks for reporting! Before submitting:
-        - Check [Known Limitations](https://github.com/alnah/go-transcript#known-limitations)
-        - Check [Troubleshooting](https://github.com/alnah/go-transcript#troubleshooting)
-        - Search [existing issues](https://github.com/alnah/go-transcript/issues)
+        - Check [Known Limitations](https://github.com/alnah/transcript#known-limitations)
+        - Check [Troubleshooting](https://github.com/alnah/transcript#troubleshooting)
+        - Search [existing issues](https://github.com/alnah/transcript/issues)
 
         > **Note:** This project is in active development and not accepting PRs, but bug reports are welcome.
 
@@ -98,7 +98,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: go-transcript Version
+      label: transcript Version
       description: Run `transcript version` to check
       placeholder: "v0.1.0"
     validations:

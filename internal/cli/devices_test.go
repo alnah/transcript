@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/alnah/go-transcript/internal/audio"
+	"github.com/alnah/transcript/internal/audio"
 )
 
 // ---------------------------------------------------------------------------

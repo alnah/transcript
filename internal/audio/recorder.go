@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/ffmpeg"
+	"github.com/alnah/transcript/internal/ffmpeg"
 )
 
 // Compile-time interface implementation checks.

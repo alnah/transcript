@@ -38,23 +38,23 @@ var (
 	ErrNotDirectory = errors.New("path is not a directory")
 )
 
-// Config holds user configuration loaded from ~/.config/go-transcript/config.
+// Config holds user configuration loaded from ~/.config/transcript/config.
 type Config struct {
 	OutputDir string
 }
 
 // dir returns the configuration directory path.
-// Uses XDG_CONFIG_HOME if set, otherwise ~/.config/go-transcript.
+// Uses XDG_CONFIG_HOME if set, otherwise ~/.config/transcript.
 func dir() (string, error) {
 	if xdg := os.Getenv("XDG_CONFIG_HOME"); xdg != "" {
-		return filepath.Join(xdg, "go-transcript"), nil
+		return filepath.Join(xdg, "transcript"), nil
 	}
 
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("cannot determine home directory: %w", err)
 	}
-	return filepath.Join(home, ".config", "go-transcript"), nil
+	return filepath.Join(home, ".config", "transcript"), nil
 }
 
 // path returns the full path to the config file.
@@ -333,7 +333,7 @@ func EnsureOutputDir(dir string) error {
 	}
 
 	// Check if writable by attempting to create a temp file.
-	testFile := filepath.Join(dir, ".go-transcript-write-test")
+	testFile := filepath.Join(dir, ".transcript-write-test")
 	f, err := os.Create(testFile) // #nosec G304 -- path is constructed from validated dir
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrNotWritable, dir)

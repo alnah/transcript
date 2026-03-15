@@ -51,7 +51,7 @@ changelog:
 release:
   github:
     owner: alnah
-    name: go-transcript
+    name: transcript
   draft: false
   prerelease: auto
   name_template: "v{{.Version}}"

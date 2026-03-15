@@ -10,9 +10,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/alnah/go-transcript/internal/config"
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/template"
+	"github.com/alnah/transcript/internal/config"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/template"
 )
 
 // Notes:

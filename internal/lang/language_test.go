@@ -14,7 +14,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/alnah/go-transcript/internal/lang"
+	"github.com/alnah/transcript/internal/lang"
 )
 
 // ---------------------------------------------------------------------------

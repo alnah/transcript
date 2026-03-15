@@ -12,13 +12,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/config"
-	"github.com/alnah/go-transcript/internal/format"
-	"github.com/alnah/go-transcript/internal/interrupt"
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/template"
-	"github.com/alnah/go-transcript/internal/transcribe"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/config"
+	"github.com/alnah/transcript/internal/format"
+	"github.com/alnah/transcript/internal/interrupt"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/template"
+	"github.com/alnah/transcript/internal/transcribe"
 )
 
 // postInterruptTimeout is the maximum time allowed for transcription and
@@ -300,7 +300,7 @@ type liveRecordResult struct {
 // liveRecordPhase executes the recording phase.
 func liveRecordPhase(ctx context.Context, env *Env, lctx *liveContext, opts liveOptions) (*liveRecordResult, error) {
 	// Create temporary file for recording
-	tempDir, err := os.MkdirTemp("", "go-transcript-live-*")
+	tempDir, err := os.MkdirTemp("", "transcript-live-*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp directory: %w", err)
 	}

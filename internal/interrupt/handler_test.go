@@ -25,7 +25,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/interrupt"
+	"github.com/alnah/transcript/internal/interrupt"
 )
 
 // syncBuffer is a thread-safe bytes.Buffer for testing.

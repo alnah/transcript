@@ -7,11 +7,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/config"
-	"github.com/alnah/go-transcript/internal/ffmpeg"
-	"github.com/alnah/go-transcript/internal/restructure"
-	"github.com/alnah/go-transcript/internal/transcribe"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/config"
+	"github.com/alnah/transcript/internal/ffmpeg"
+	"github.com/alnah/transcript/internal/restructure"
+	"github.com/alnah/transcript/internal/transcribe"
 )
 
 // Env holds injectable dependencies for CLI commands.

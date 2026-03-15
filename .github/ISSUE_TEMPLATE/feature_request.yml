@@ -7,8 +7,8 @@ body:
     attributes:
       value: |
         Thanks for your suggestion! Before submitting:
-        - Search [existing issues](https://github.com/alnah/go-transcript/issues) for similar requests
-        - Check [Known Limitations](https://github.com/alnah/go-transcript#known-limitations) for intentional design decisions
+        - Search [existing issues](https://github.com/alnah/transcript/issues) for similar requests
+        - Check [Known Limitations](https://github.com/alnah/transcript#known-limitations) for intentional design decisions
 
         > **Note:** This project is in active development and not accepting PRs, but feature suggestions are welcome.
 

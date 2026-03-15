@@ -3,7 +3,7 @@
 See [ARCHITECTURE.md](ARCHITECTURE.md) for system design and data flow.
 
 ```
-go-transcript/                  # CLI application
+transcript/                  # CLI application
 │
 ├── cmd/
 │   └── transcript/
@@ -134,7 +134,7 @@ go-transcript/                  # CLI application
 | `internal/transcribe`| OpenAI transcription via direct HTTP, parallel processing |
 | `internal/restructure`| LLM-based formatting via direct HTTP (DeepSeek, OpenAI) |
 | `internal/template`  | Prompt templates for restructuring           |
-| `internal/config`    | User settings (~/.config/go-transcript/)     |
+| `internal/config`    | User settings (~/.config/transcript/)     |
 | `internal/ffmpeg`    | Binary resolution, auto-download             |
 | `internal/format`    | Human-readable formatting utilities          |
 | `internal/interrupt` | Graceful shutdown, double Ctrl+C detection   |

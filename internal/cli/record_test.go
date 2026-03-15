@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/config"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/config"
 )
 
 // ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/alnah/go-transcript/internal/config"
+	"github.com/alnah/transcript/internal/config"
 )
 
 // validConfigKeys lists all supported configuration keys.
@@ -22,7 +22,7 @@ func ConfigCmd(env *Env) *cobra.Command {
 		Short: "Manage configuration settings",
 		Long: `Manage persistent configuration settings.
 
-Configuration is stored in ~/.config/go-transcript/config.
+Configuration is stored in ~/.config/transcript/config.
 Settings can also be overridden via environment variables.
 
 Supported settings:

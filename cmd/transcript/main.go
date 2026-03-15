@@ -12,13 +12,13 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 
-	"github.com/alnah/go-transcript/internal/apierr"
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/cli"
-	"github.com/alnah/go-transcript/internal/ffmpeg"
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/restructure"
-	"github.com/alnah/go-transcript/internal/template"
+	"github.com/alnah/transcript/internal/apierr"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/cli"
+	"github.com/alnah/transcript/internal/ffmpeg"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/restructure"
+	"github.com/alnah/transcript/internal/template"
 )
 
 // Injected at build time via ldflags.

@@ -16,9 +16,9 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/alnah/go-transcript/internal/apierr"
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/lang"
+	"github.com/alnah/transcript/internal/apierr"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/lang"
 )
 
 // OpenAI transcription model and format identifiers.

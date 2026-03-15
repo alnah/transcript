@@ -5,12 +5,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/config"
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/restructure"
-	"github.com/alnah/go-transcript/internal/template"
-	"github.com/alnah/go-transcript/internal/transcribe"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/config"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/restructure"
+	"github.com/alnah/transcript/internal/template"
+	"github.com/alnah/transcript/internal/transcribe"
 )
 
 // ---------------------------------------------------------------------------

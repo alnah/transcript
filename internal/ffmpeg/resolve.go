@@ -170,7 +170,7 @@ func NewResolver(opts ...ResolverOption) *Resolver {
 
 // Resolve finds ffmpeg using the following precedence:
 //  1. FFMPEG_PATH environment variable (error if set but invalid)
-//  2. ~/.go-transcript/bin/ffmpeg (installed by us)
+//  2. ~/.transcript/bin/ffmpeg (installed by us)
 //  3. System PATH
 //  4. Auto-download if nothing found
 func (r *Resolver) Resolve(ctx context.Context) (string, error) {
@@ -215,7 +215,7 @@ func (r *Resolver) installDir() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("cannot determine home directory: %w", err)
 	}
-	return filepath.Join(home, ".go-transcript", "bin"), nil
+	return filepath.Join(home, ".transcript", "bin"), nil
 }
 
 // installedPath returns the path where ffmpeg would be installed.

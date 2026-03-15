@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/apierr"
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/template"
+	"github.com/alnah/transcript/internal/apierr"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/template"
 )
 
 // OpenAI API configuration.

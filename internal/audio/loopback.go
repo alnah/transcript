@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/alnah/go-transcript/internal/ffmpeg"
+	"github.com/alnah/transcript/internal/ffmpeg"
 )
 
 // shellCommandRunner executes shell commands.

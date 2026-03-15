@@ -3,8 +3,8 @@ package restructure
 import (
 	"context"
 
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/template"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/template"
 )
 
 // Restructurer transforms raw transcripts into structured markdown using templates.

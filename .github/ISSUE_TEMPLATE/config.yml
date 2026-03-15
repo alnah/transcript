@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation
-    url: https://github.com/alnah/go-transcript#readme
+    url: https://github.com/alnah/transcript#readme
     about: Check the README for usage instructions
   - name: Known Limitations
-    url: https://github.com/alnah/go-transcript#known-limitations
+    url: https://github.com/alnah/transcript#known-limitations
     about: See if your issue is a known limitation
   - name: Troubleshooting
-    url: https://github.com/alnah/go-transcript#troubleshooting
+    url: https://github.com/alnah/transcript#troubleshooting
     about: Common issues and solutions

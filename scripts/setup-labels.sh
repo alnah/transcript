@@ -1,5 +1,5 @@
 #!/bin/bash
-# setup-labels.sh - Configure GitHub labels for go-transcript
+# setup-labels.sh - Configure GitHub labels for transcript
 
 set -e
 

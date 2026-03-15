@@ -17,10 +17,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/apierr"
-	"github.com/alnah/go-transcript/internal/audio"
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/transcribe"
+	"github.com/alnah/transcript/internal/apierr"
+	"github.com/alnah/transcript/internal/audio"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/transcribe"
 )
 
 // Notes:

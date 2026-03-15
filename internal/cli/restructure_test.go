@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/alnah/go-transcript/internal/lang"
-	"github.com/alnah/go-transcript/internal/restructure"
-	"github.com/alnah/go-transcript/internal/template"
+	"github.com/alnah/transcript/internal/lang"
+	"github.com/alnah/transcript/internal/restructure"
+	"github.com/alnah/transcript/internal/template"
 )
 
 // Notes:

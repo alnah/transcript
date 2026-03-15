@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/ffmpeg"
-	"github.com/alnah/go-transcript/internal/format"
+	"github.com/alnah/transcript/internal/ffmpeg"
+	"github.com/alnah/transcript/internal/format"
 )
 
 // Compile-time interface implementation checks.
@@ -170,7 +170,7 @@ func (tc *TimeChunker) Chunk(ctx context.Context, audioPath string) ([]Chunk, er
 	}
 
 	// Create temp directory for chunks.
-	tempDir, err := tc.tempDir.MkdirTemp("", "go-transcript-*")
+	tempDir, err := tc.tempDir.MkdirTemp("", "transcript-*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp directory: %w", err)
 	}
@@ -489,7 +489,7 @@ func (sc *SilenceChunker) Chunk(ctx context.Context, audioPath string) ([]Chunk,
 	cutPoints := sc.selectCutPoints(silences, avgBitrate)
 
 	// Create temp directory for chunks.
-	tempDir, err := sc.tempDir.MkdirTemp("", "go-transcript-*")
+	tempDir, err := sc.tempDir.MkdirTemp("", "transcript-*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp directory: %w", err)
 	}
@@ -747,7 +747,7 @@ func CleanupChunks(chunks []Chunk) error {
 	tempDir := filepath.Dir(chunks[0].Path)
 
 	// Verify it's a temp directory before removing.
-	if !strings.Contains(tempDir, "go-transcript-") {
+	if !strings.Contains(tempDir, "transcript-") {
 		// Safety check: don't delete arbitrary directories.
 		// Fall back to removing individual files.
 		for _, chunk := range chunks {

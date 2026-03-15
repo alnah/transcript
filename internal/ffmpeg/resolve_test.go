@@ -367,8 +367,8 @@ func TestResolverResolveInstalledPath(t *testing.T) {
 	t.Parallel()
 
 	homeDir := "/mock/home"
-	installedPath := filepath.Join(homeDir, ".go-transcript", "bin", "ffmpeg")
-	versionPath := filepath.Join(homeDir, ".go-transcript", "bin", ".version")
+	installedPath := filepath.Join(homeDir, ".transcript", "bin", "ffmpeg")
+	versionPath := filepath.Join(homeDir, ".transcript", "bin", ".version")
 
 	env := &mockEnvProvider{
 		getenv:      func(key string) string { return "" },
@@ -525,7 +525,7 @@ func TestResolverResolveAutoDownload(t *testing.T) {
 		t.Fatalf("Resolve() unexpected error: %v", err)
 	}
 
-	expectedPath := filepath.Join(tmpDir, ".go-transcript", "bin", "ffmpeg")
+	expectedPath := filepath.Join(tmpDir, ".transcript", "bin", "ffmpeg")
 	if got != expectedPath {
 		t.Errorf("Resolve() = %q, want %q", got, expectedPath)
 	}
@@ -536,7 +536,7 @@ func TestResolverResolveAutoDownload(t *testing.T) {
 	}
 
 	// Verify version file
-	versionPath := filepath.Join(tmpDir, ".go-transcript", "bin", ".version")
+	versionPath := filepath.Join(tmpDir, ".transcript", "bin", ".version")
 	versionData, err := os.ReadFile(versionPath)
 	if err != nil {
 		t.Errorf("Resolve() did not create version file: %v", err)

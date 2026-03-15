@@ -1,4 +1,4 @@
-module github.com/alnah/go-transcript
+module github.com/alnah/transcript
 
 go 1.25.4
 

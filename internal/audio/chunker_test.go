@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/audio"
+	"github.com/alnah/transcript/internal/audio"
 )
 
 // ---------------------------------------------------------------------------
@@ -1028,11 +1028,11 @@ func TestSilenceChunkerOptions(t *testing.T) {
 func TestCleanupChunks_SafetyCheck(t *testing.T) {
 	t.Parallel()
 
-	// CleanupChunks should only remove directories matching go-transcript pattern
+	// CleanupChunks should only remove directories matching transcript pattern
 	t.Run("non-temp directory falls back to individual file removal", func(t *testing.T) {
 		t.Parallel()
 
-		// Create chunks with a path that doesn't contain "go-transcript-"
+		// Create chunks with a path that doesn't contain "transcript-"
 		chunks := []audio.Chunk{
 			{Path: "/some/random/path/chunk_000.ogg"},
 		}

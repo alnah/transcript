@@ -1,12 +1,11 @@
 # Project
 .env
 .claude/
-.go-transcript/
+.transcript/
 docs/_*.md
 
 # Build artifacts
 /transcript
-/go-transcript
 
 # Audio files
 *.ogg

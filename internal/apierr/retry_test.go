@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alnah/go-transcript/internal/apierr"
+	"github.com/alnah/transcript/internal/apierr"
 )
 
 // ---------------------------------------------------------------------------
